@@ -16,6 +16,7 @@
     "react": "^16.13.1",
     "react-app-rewired": "^2.1.6",
     "react-dom": "^16.13.1",
+    "react-hook-form": "^6.7.2",
     "react-radio-group": "^3.0.3",
     "react-scripts": "3.4.3",
     "tailwindcss": "^1.8.2",

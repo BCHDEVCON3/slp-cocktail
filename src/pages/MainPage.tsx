@@ -1,7 +1,14 @@
 import React from 'react';
+import { useForm, Controller } from 'react-hook-form';
 import './MainPage.css';
 import InlineRadioGroup from "../components/InlineRadioGroup";
 import CustomSelect from "../components/CustomSelect";
+
+interface ShakeFormValues {
+  token: string;
+  amount: number;
+  peers: number;
+}
 
 export default function MainPage() {
   const bthAddress = 'qzs02v05l';
@@ -9,6 +16,11 @@ export default function MainPage() {
   const tokenBalance = 15;
   const tokenSymbol = 'WBTC';
   const peersCount = 3;
+
+  const {
+    control,
+    handleSubmit
+  } = useForm<ShakeFormValues>({ defaultValues: { token: "WBTC", amount: 10, peers: 5 } });
 
   return (
     <div>
@@ -26,24 +38,42 @@ export default function MainPage() {
       </header>
       <div className="mt-10 mb-16 flex justify-evenly">
         <div className="w-4/12">
-          <form>
+          <form onSubmit={handleSubmit(console.log)}>
             <div className="mb-6">
               <p className="mb-6 text-2xl">Token</p>
-              <CustomSelect id="token" options={["WBTC", "MAZE", "Mistcoin"]} onChange={console.log} value="WBTC" />
+              <Controller
+                name="token"
+                render={({ name, value, onChange }) => (
+                  <CustomSelect id={name} options={["WBTC", "MAZE", "Mistcoin"]} onChange={onChange} value={value} />
+                )}
+                control={control}
+              />
             </div>
 
             <div className="mb-6">
               <p className="mb-6 text-2xl">Amount</p>
-              <InlineRadioGroup id="amount" options={[1, 5, 10, 50]} onChange={console.log} selectedValue={10} />
+              <Controller
+                name="amount"
+                render={({ name, value, onChange }) => (
+                  <InlineRadioGroup id={name} options={[1, 5, 10, 50]} onChange={onChange} selectedValue={value} />
+                )}
+                control={control}
+              />
             </div>
 
             <div className="mb-5">
               <p className="mb-6 text-2xl">Peers</p>
-              <InlineRadioGroup id="peers" options={[5, 7, 10, 15]} onChange={console.log} selectedValue={5} />
+              <Controller
+                name="peers"
+                render={({ name, value, onChange }) => (
+                  <InlineRadioGroup id={name} options={[5, 7, 10, 15]} onChange={onChange} selectedValue={value} />
+                )}
+                control={control}
+              />
             </div>
 
             <div className="mt-8 flex justify-center">
-              <button className="bg-red-600 px-4 py-3 text-2xl" type="submit">Shake it!</button>
+              <button className="bg-red-600 px-4 py-3 text-2xl rounded" type="submit">Shake it!</button>
             </div>
           </form>
         </div>
