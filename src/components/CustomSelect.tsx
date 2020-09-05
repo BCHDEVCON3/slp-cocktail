@@ -4,20 +4,21 @@ import usePopover from "../hooks/usePopover";
 
 export interface CustomSelectProps<T extends string | number> {
   id: string;
-  options: T[];
+  options: {label: string | number; value: T}[];
   onChange: (newValue: T) => void;
-  value: T;
+  value?: T;
 }
 
 interface CustomSelectOptionProps<T extends string | number> {
   active: boolean;
   inputId: string;
+  label: string | number;
   onClick: (newValue: T) => void;
   value: T;
 }
 
 const CustomSelectOption = <T extends string | number>(props: CustomSelectOptionProps<T>) => {
-  const { active, inputId, onClick, value } = props;
+  const { active, inputId, label, onClick, value } = props;
 
   const handleClick = useCallback(() => {
     if (!active) {
@@ -35,7 +36,7 @@ const CustomSelectOption = <T extends string | number>(props: CustomSelectOption
       onClick={handleClick}
     >
       <div className="flex justify-center">
-        {value}
+        {label}
       </div>
     </li>
   );
@@ -67,7 +68,7 @@ export default function CustomSelect<T extends string | number>(props: CustomSel
         className="w-full p-5 border border-white text-blue-500 text-2xl underline rounded relative"
         onClick={handleTriggerClick}
       >
-        {value}
+        {options.find(({ value: optionValue }) => optionValue === value)?.label}
       </button>
 
       <div
@@ -83,12 +84,13 @@ export default function CustomSelect<T extends string | number>(props: CustomSel
           className="py-1 overflow-auto text-base rounded-md shadow-xs bg-gray-900"
             style={{ maxHeight: "14rem" }}
           >
-            {options.map((option) => (
+            {options.map(({ label, value: optionValue }) => (
               <CustomSelectOption
-                active={option === value}
+                active={optionValue === value}
                 inputId={id}
-                key={option}
-                value={option}
+                key={optionValue}
+                label={label}
+                value={optionValue}
                 onClick={handleOptionClick}
               />
             ))}

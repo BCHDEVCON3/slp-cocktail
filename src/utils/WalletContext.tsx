@@ -50,6 +50,8 @@ export const WalletProvider = (props: { children: React.ReactNode | React.ReactN
           const { address } = await BitcoinLink.getAddress({protocol: 'BCH'});
           // @ts-ignore
           const { address: slpAddress } = await BitcoinLink.getAddress({protocol: 'SLP'});
+          // const address = 'bitcoincash:qzs02v05l7qs5s24srqju498qu55dwuj0cx5ehjm2c';
+          // const slpAddress = 'simpleledger:qz9tzs6d5097ejpg279rg0rnlhz546q4fsnck9wh5m';
 
           const balance = (await axios.get(
             `https://explorer.api.bitcoin.com/bch/v1/addr/\
@@ -60,7 +62,7 @@ bitcoincash%3A${address.split(':')[1]}?from=0&to=1000&noTxList=1`
           )).data;
           const tokensData: RawTokenData[] = slpBalance.length > 0
             ? (await axios.post(`https://rest.bitcoin.com/v2/slp/list`, {
-              tokensIds: slpBalance.map(slpToken => slpToken.tokenId)
+              tokenIds: slpBalance.map(slpToken => slpToken.tokenId)
             })).data
             : [];
 

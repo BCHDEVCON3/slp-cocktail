@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect, useMemo, useRef} from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import './MainPage.css';
 import InlineRadioGroup from "../components/InlineRadioGroup";
@@ -15,11 +15,27 @@ export default function MainPage() {
   const peersCount = 3;
 
   const { error, data } = useContext(WalletContext);
+  const tokens = data?.tokens;
+  const prevTokens = useRef(data?.tokens);
 
   const {
     control,
+    getValues,
+    setValue,
     handleSubmit
-  } = useForm<ShakeFormValues>({ defaultValues: { token: "WBTC", amount: 10, peers: 5 } });
+  } = useForm<ShakeFormValues>({ defaultValues: { token: tokens?.[0]?.symbol, amount: 10, peers: 5 } });
+
+  useEffect(() => {
+    if ((prevTokens.current !== tokens) && !tokens?.find(token => token.id === getValues('token'))) {
+      setValue('token', tokens?.[0]?.id);
+    }
+    prevTokens.current = tokens;
+  }, [getValues, setValue, tokens]);
+
+  const tokensOptions = useMemo(
+    () => tokens?.map(({ id, symbol }) => ({ label: symbol, value: id })) || [],
+    [tokens]
+  );
 
   if (error) {
     return (
@@ -61,11 +77,13 @@ export default function MainPage() {
             <div className="mb-6">
               <p className="mb-6 text-2xl">Token</p>
               <Controller
+                defaultValue={tokens?.[0]?.symbol}
                 name="token"
                 render={({ name, value, onChange }) => (
-                  <CustomSelect id={name} options={["WBTC", "MAZE", "Mistcoin"]} onChange={onChange} value={value} />
+                  <CustomSelect id={name} options={tokensOptions} onChange={onChange} value={value} />
                 )}
                 control={control}
+                rules={{ required: 'This field is required' }}
               />
             </div>
 
