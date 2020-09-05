@@ -10,13 +10,17 @@
     "@types/node": "^12.0.0",
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
+    "@types/react-radio-group": "^3.0.2",
+    "clsx": "^1.1.1",
     "customize-cra": "^1.0.0",
     "react": "^16.13.1",
     "react-app-rewired": "^2.1.6",
     "react-dom": "^16.13.1",
+    "react-radio-group": "^3.0.3",
     "react-scripts": "3.4.3",
     "tailwindcss": "^1.8.2",
     "typescript": "~3.7.2",
+    "use-onclickoutside": "^0.3.1",
     "woozie": "^1.0.0-beta.8"
   },
   "scripts": {

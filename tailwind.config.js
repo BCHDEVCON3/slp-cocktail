@@ -14,9 +14,13 @@ module.exports = {
         },
         red: {
           '600': '#f20519'
+        },
+        gray: {
+          '900': '#0a1926'
         }
       },
       fontSize: {
+        '5xl': '2.75rem',
         '8xl': '5.655rem'
       }
     }
