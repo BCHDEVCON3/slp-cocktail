@@ -1,8 +1,9 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import './MainPage.css';
 import InlineRadioGroup from "../components/InlineRadioGroup";
 import CustomSelect from "../components/CustomSelect";
+import WalletContext from "../utils/WalletContext";
 
 interface ShakeFormValues {
   token: string;
@@ -11,24 +12,42 @@ interface ShakeFormValues {
 }
 
 export default function MainPage() {
-  const bthAddress = 'qzs02v05l';
-  const bchBalance = 1.1;
-  const tokenBalance = 15;
-  const tokenSymbol = 'WBTC';
   const peersCount = 3;
+
+  const { error, data } = useContext(WalletContext);
 
   const {
     control,
     handleSubmit
   } = useForm<ShakeFormValues>({ defaultValues: { token: "WBTC", amount: 10, peers: 5 } });
 
+  if (error) {
+    return (
+      <div className="p-10 text-center text-red-600">{error.message}</div>
+    );
+  }
+
+  if (!data) {
+    return (
+      <div className="p-10 text-center">Please wait, loading...</div>
+    );
+  }
+
   return (
     <div>
       <header className="flex pl-10 pr-5">
         <div className="text-sm flex-1 mt-8">
-          <p><span className="text-orange-500">Your</span> address: {bthAddress.substr(0, 8)}…</p>
-          <p>BCH Balance: {bchBalance} <span className="text-orange-500">BCH</span></p>
-          <p><span className="text-blue-500">Token Balance</span>: {tokenBalance} {tokenSymbol}</p>
+          <p><span className="text-orange-500">
+            Your</span> address: {data.address.split(':')[1].substr(0, 8)}…
+          </p>
+          <p>BCH Balance: {data.balance} <span className="text-orange-500">BCH</span></p>
+          <p>
+            <span className="text-blue-500">Token Balance</span>:{' '}
+            {data.tokens.length === 0
+              ? '-'
+              : data.tokens.map(({ balance, symbol }) => `${balance} ${symbol}`).join(', ')
+            }
+          </p>
           <p>Current <span className="text-orange-500">peers</span>: {peersCount}</p>
         </div>
         <div className="flex-none brand-name text-8xl mr-6 mt-10">

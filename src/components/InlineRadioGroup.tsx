@@ -19,7 +19,7 @@ export default function InlineRadioGroup<T extends string | number>(props: Inlin
       selectedValue={selectedValue}
     >
       {options.map(option => (
-        <>
+        <React.Fragment key={option}>
           <Radio className="hidden" value={option} id={`${id}-${option}`} key={option} />
           <label
             className={clsx("px-1 cursor-pointer text-2xl", { 'text-orange-500': option === selectedValue })}
@@ -27,7 +27,7 @@ export default function InlineRadioGroup<T extends string | number>(props: Inlin
           >
             {option}
           </label>
-        </>
+        </React.Fragment>
       ))}
     </RadioGroup>
   );

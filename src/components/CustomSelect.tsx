@@ -87,6 +87,7 @@ export default function CustomSelect<T extends string | number>(props: CustomSel
               <CustomSelectOption
                 active={option === value}
                 inputId={id}
+                key={option}
                 value={option}
                 onClick={handleOptionClick}
               />
