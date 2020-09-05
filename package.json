@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@psf/bch-js": "^3.5.5",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
@@ -11,6 +12,7 @@
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
     "@types/react-radio-group": "^3.0.2",
+    "bignumber.js": "^9.0.0",
     "clsx": "^1.1.1",
     "customize-cra": "^1.0.0",
     "react": "^16.13.1",
@@ -19,6 +21,7 @@
     "react-hook-form": "^6.7.2",
     "react-radio-group": "^3.0.3",
     "react-scripts": "3.4.3",
+    "slp-mdm": "^0.0.6",
     "tailwindcss": "^1.8.2",
     "typescript": "~3.7.2",
     "use-onclickoutside": "^0.3.1",
