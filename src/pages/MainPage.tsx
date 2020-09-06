@@ -113,8 +113,14 @@ export default function MainPage() {
         <div className="text-sm flex-1 mt-8">
           {data ? (
             <>
-              <p><span className="text-orange-500">
-                Your</span> address: {data.address.split(':')[1].substr(0, 8)}…
+              <p>
+                <span className="text-orange-500">Your</span> address:{' '}
+                <span
+                  className="inline-block w-20 overflow-hidden align-bottom"
+                  style={{ textOverflow: 'ellipsis' }}
+                >
+                  {data.address.split(':')[1]}
+                </span>
               </p>
               <p>BCH Balance: {data.balance} <span className="text-orange-500">BCH</span></p>
               <p>

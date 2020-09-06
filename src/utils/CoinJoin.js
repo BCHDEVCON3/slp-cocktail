@@ -201,10 +201,31 @@ class CoinJoin {
     }
   }
 
-  async getSLPBalance(slpAddress) {
+  async getSLPBalance(cashAddress) {
     try {
-      const tokens = await this.bchjs.SLP.Utils.balancesForAddress(slpAddress);
-      return tokens;
+      // doest work:
+      // const tokens = await this.bchjs.SLP.Utils.balancesForAddress(slpAddress);
+
+      // try:
+      const data = await this.bchjs.Electrumx.utxo(cashAddress);
+      const utxos = data.utxos;
+
+      let allUtxos = await this.bchjs.SLP.Utils.tokenUtxoDetails(utxos);
+      let tokens = {};
+      allUtxos.forEach((utxo) => {
+        if (utxo && utxo.utxoType === "token") {
+          tokens[utxo.tokenId] = tokens[utxo.tokenId] || {
+            tokenId: utxo.tokenId,
+            balance: 0,
+            slpAddress: this.bchjs.SLP.Address.toSLPAddress(cashAddress),
+            decimalCount: utxo.decimals,
+            tokenTicker: utxo.tokenTicker,
+            tokenName: utxo.tokenName,
+          };
+          tokens[utxo.tokenId].balance += utxo.tokenQty;
+        }
+      });
+      return Object.values(tokens);
     } catch (err) {
       throw err;
     }
