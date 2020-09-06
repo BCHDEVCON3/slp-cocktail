@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import BchJS from "@psf/bch-js";
+// import BchJS from "@psf/bch-js";
 import BigNumber from "bignumber.js";
 
 const NETWORK = "testnet";
