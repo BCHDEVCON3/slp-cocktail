@@ -11,12 +11,13 @@ export interface ShakeFormValues {
 }
 
 export interface ShakeFormProps {
+  cancelFn?: () => void;
   tokensOptions: CustomSelectProps<string>['options'];
   onSubmit: (formValues: ShakeFormValues) => void;
 }
 
 export default function ShakeForm(props: ShakeFormProps) {
-  const { tokensOptions, onSubmit } = props;
+  const { cancelFn, tokensOptions, onSubmit } = props;
 
   const {
     control,
@@ -41,6 +42,7 @@ export default function ShakeForm(props: ShakeFormProps) {
   }, [getValues, setValue, tokensOptions]);
 
   return (
+    <>
     <form onSubmit={internalHandleSubmit}>
       <div className="mb-6">
         <p className="mb-6 text-2xl">Token</p>
@@ -92,16 +94,24 @@ export default function ShakeForm(props: ShakeFormProps) {
           rules={{
             required: 'This field is required',
             pattern: {
-              value: /^((simpleledger:)?(q|p)[a-z0-9]{41})/,
+              value: /^((slptest:)?(q|p)[a-z0-9]{41})/,
               message: 'Invalid address'
             }
           }}
         />
       </div>
 
-      <div className="mt-8 flex justify-center">
-        <button className="bg-red-600 px-4 py-3 text-2xl rounded" type="submit">Shake it!</button>
-      </div>
+      {!cancelFn && (
+        <div className="mt-8 flex justify-center">
+          <button className="bg-red-600 px-4 py-3 text-2xl rounded" type="submit">Shake it!</button>
+        </div>
+      )}
     </form>
+    {cancelFn && (
+      <div className="mt-8 flex justify-center">
+        <button className="bg-red-600 px-4 py-3 text-2xl rounded" onClick={cancelFn}>Cancel</button>
+      </div>
+    )}
+    </>
   );
 }

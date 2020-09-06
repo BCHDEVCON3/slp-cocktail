@@ -5,6 +5,7 @@ import WalletContext from "../utils/WalletContext";
 import CustomModal from "../components/CustomModal";
 import ShakeForm, {ShakeFormValues} from "../components/ShakeForm";
 import {coinjoin} from "../index";
+import {shakeIt} from "../core/coinjoin";
 
 interface LoginFormValues {
   wif: string;
@@ -14,12 +15,15 @@ export default function MainPage() {
   const peersCount = 3;
 
   const { error, data, setError, setWalletData } = useContext(WalletContext);
+  const [cancelFnWrapper, setCancelFnWrapper] = useState<{ cancelFn: () => void }>();
+  const [transactionUrl, setTransactionUrl] = useState<string>();
   const [errorForModal, setErrorForModal] = useState<Error>();
   const [isLoginOpen, setIsLoginOpen] = useState(false);
 
   const handleLoginClick = useCallback(() => setIsLoginOpen(true), []);
   const handleLoginModalClose = useCallback(() => setIsLoginOpen(false), []);
   const handleErrorModalClose = useCallback(() => setErrorForModal(undefined), []);
+  const handleSuccessModalClose = useCallback(() => setTransactionUrl(undefined), []);
 
   const {
     control: loginControl,
@@ -32,13 +36,19 @@ export default function MainPage() {
       const ecpair = coinjoin.bchjs.ECPair.fromWIF(formData.wif);
       const cashAddress = coinjoin.bchjs.ECPair.toCashAddress(ecpair);
       const { balance } = await coinjoin.getBCHBalance(cashAddress);
-      console.log(await coinjoin.bchjs.SLP.Utils.balancesForAddress(cashAddress));
+      const tokens = await coinjoin.getSLPBalance(cashAddress);
       setError(undefined);
       setWalletData({
         balance: Number(balance.confirmed) / 1e8,
-        tokens: [],
-        slpAddress: '',
-        address: cashAddress
+        tokens: tokens.map(({ balance, decimalCount, tokenId, tokenName, tokenTicker }) => ({
+          balance: balance / 10 ** decimalCount,
+          id: tokenId,
+          symbol: tokenTicker,
+          name: tokenName
+        })),
+        slpAddress: tokens[0]?.slpAddress || '',
+        address: cashAddress,
+        wif: formData.wif
       });
     } catch (e) {
       setErrorForModal(e);
@@ -47,11 +57,34 @@ export default function MainPage() {
 
   const handleShakeFormSubmit = useCallback((formData: ShakeFormValues) => {
     if (data) {
-      console.log(formData);
+      const cleanupFn = shakeIt(
+        { wif: data.wif, amount: formData.amount, peersSize: formData.peers, recepient: formData.address, tokenId: formData.token },
+        params => {
+          setCancelFnWrapper(undefined);
+          setTransactionUrl(params.explorerUrl);
+        },
+        error => {
+          setCancelFnWrapper(undefined);
+          console.error(error);
+          setErrorForModal(error);
+        }
+      );
+      setCancelFnWrapper({ cancelFn: cleanupFn });
     } else {
       setErrorForModal(new Error('You should log in'));
     }
   }, [data]);
+
+  const cleanupFn = useMemo(() => {
+    if (!cancelFnWrapper) {
+      return undefined;
+    }
+
+    return () => {
+      cancelFnWrapper?.cancelFn();
+      setCancelFnWrapper(undefined);
+    };
+  }, [cancelFnWrapper]);
 
   const tokensOptions = useMemo(
     () => data
@@ -70,6 +103,16 @@ export default function MainPage() {
       >
         <h1 className="p-3 text-center text-4xl">Error</h1>
         <p>{errorForModal?.message}</p>
+      </CustomModal>
+
+      <CustomModal
+        className="w-full max-w-lg"
+        isOpen={!!transactionUrl}
+        contentLabel="Success"
+        onRequestClose={handleSuccessModalClose}
+      >
+        <h1 className="p-3 text-center text-4xl">Success</h1>
+        <p>See <a href={transactionUrl} target="_blank" rel="noopener noreferrer">{transactionUrl}</a> for details</p>
       </CustomModal>
 
       <CustomModal
@@ -144,7 +187,7 @@ export default function MainPage() {
       {error && <div className="text-red-600 text-center p-4">{error.message}</div>}
       <div className="mt-10 mb-16 flex justify-evenly">
         <div className="w-4/12">
-          <ShakeForm tokensOptions={tokensOptions} onSubmit={handleShakeFormSubmit} />
+          <ShakeForm tokensOptions={tokensOptions} onSubmit={handleShakeFormSubmit} cancelFn={cleanupFn} />
         </div>
         <div className="w-4/12 pt-12">
           <h1 className="text-5xl mt-2 mb-16">How it works</h1>

@@ -12,6 +12,7 @@ export interface WalletData {
   slpAddress: string;
   balance: number;
   tokens: SlpToken[];
+  wif: string;
 }
 
 export interface WalletContextValue {
