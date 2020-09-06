@@ -6,6 +6,7 @@ import CustomSelect from "../components/CustomSelect";
 import WalletContext from "../utils/WalletContext";
 
 interface ShakeFormValues {
+  address: string;
   token: string;
   amount: number;
   peers: number;
@@ -106,6 +107,29 @@ export default function MainPage() {
                   <InlineRadioGroup id={name} options={[5, 7, 10, 15]} onChange={onChange} selectedValue={value} />
                 )}
                 control={control}
+              />
+            </div>
+
+            <div className="mb-5">
+              <p className="mb-6 text-2xl">Recepient address</p>
+              <Controller
+                name="address"
+                render={({ name, value, onChange }) => (
+                  <input
+                    className="w-full bg-transparent p-5 border border-white rounded text-xl"
+                    name={name}
+                    value={value}
+                    onChange={onChange}
+                  />
+                )}
+                control={control}
+                rules={{
+                  required: 'This field is required',
+                  pattern: {
+                    value: /^((simpleledger:)?(q|p)[a-z0-9]{41})/,
+                    message: 'Invalid address'
+                  }
+                }}
               />
             </div>
 
