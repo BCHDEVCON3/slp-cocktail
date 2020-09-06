@@ -4,8 +4,9 @@ import "./index.css";
 import "./fonts.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
+import CoinJoin from './utils/CoinJoin';
 
-// import "./bch-playground";
+export const coinjoin = new CoinJoin();
 
 ReactDOM.render(
   <React.StrictMode>

@@ -1,142 +1,144 @@
-import React, {useContext, useEffect, useMemo, useRef} from 'react';
+import React, {useCallback, useContext, useMemo, useState} from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import './MainPage.css';
-import InlineRadioGroup from "../components/InlineRadioGroup";
-import CustomSelect from "../components/CustomSelect";
 import WalletContext from "../utils/WalletContext";
+import CustomModal from "../components/CustomModal";
+import ShakeForm, {ShakeFormValues} from "../components/ShakeForm";
+import {coinjoin} from "../index";
 
-interface ShakeFormValues {
-  address: string;
-  token: string;
-  amount: number;
-  peers: number;
+interface LoginFormValues {
+  wif: string;
 }
 
 export default function MainPage() {
   const peersCount = 3;
 
-  const { error, data } = useContext(WalletContext);
-  const tokens = data?.tokens;
-  const prevTokens = useRef(data?.tokens);
+  const { error, data, setError, setWalletData } = useContext(WalletContext);
+  const [errorForModal, setErrorForModal] = useState<Error>();
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+
+  const handleLoginClick = useCallback(() => setIsLoginOpen(true), []);
+  const handleLoginModalClose = useCallback(() => setIsLoginOpen(false), []);
+  const handleErrorModalClose = useCallback(() => setErrorForModal(undefined), []);
 
   const {
-    control,
-    getValues,
-    setValue,
-    handleSubmit
-  } = useForm<ShakeFormValues>({ defaultValues: { token: tokens?.[0]?.symbol, amount: 10, peers: 5 } });
+    control: loginControl,
+    handleSubmit: handleLoginSubmit
+  } = useForm<LoginFormValues>({ defaultValues: { wif: "" } });
 
-  useEffect(() => {
-    if ((prevTokens.current !== tokens) && !tokens?.find(token => token.id === getValues('token'))) {
-      setValue('token', tokens?.[0]?.id);
+  const onLoginSubmit = useCallback(handleLoginSubmit(async (formData: LoginFormValues) => {
+    setIsLoginOpen(false);
+    try {
+      const ecpair = coinjoin.bchjs.ECPair.fromWIF(formData.wif);
+      const cashAddress = coinjoin.bchjs.ECPair.toCashAddress(ecpair);
+      const { balance } = await coinjoin.getBCHBalance(cashAddress);
+      console.log(await coinjoin.bchjs.SLP.Utils.balancesForAddress(cashAddress));
+      setError(undefined);
+      setWalletData({
+        balance: Number(balance.confirmed) / 1e8,
+        tokens: [],
+        slpAddress: '',
+        address: cashAddress
+      });
+    } catch (e) {
+      setErrorForModal(e);
     }
-    prevTokens.current = tokens;
-  }, [getValues, setValue, tokens]);
+  }), [setError, setWalletData]);
+
+  const handleShakeFormSubmit = useCallback((formData: ShakeFormValues) => {
+    if (data) {
+      console.log(formData);
+    } else {
+      setErrorForModal(new Error('You should log in'));
+    }
+  }, [data]);
 
   const tokensOptions = useMemo(
-    () => tokens?.map(({ id, symbol }) => ({ label: symbol, value: id })) || [],
-    [tokens]
+    () => data
+      ? data.tokens.map(({ id, symbol }) => ({ label: symbol, value: id }))
+      : [{ label: 'WBTC', value: 'WBTC' }, { label: 'MAZE', value: 'MAZE' }],
+    [data]
   );
-
-  if (error) {
-    return (
-      <div className="p-10 text-center text-red-600">{error.message}</div>
-    );
-  }
-
-  if (!data) {
-    return (
-      <div className="p-10 text-center">Please wait, loading...</div>
-    );
-  }
 
   return (
     <div>
+      <CustomModal
+        className="w-full max-w-xl"
+        isOpen={!!errorForModal}
+        contentLabel="Error"
+        onRequestClose={handleErrorModalClose}
+      >
+        <h1 className="p-3 text-center text-4xl">Error</h1>
+        <p>{errorForModal?.message}</p>
+      </CustomModal>
+
+      <CustomModal
+        className="w-full max-w-xl"
+        isOpen={isLoginOpen}
+        contentLabel="Login modal"
+        onRequestClose={handleLoginModalClose}
+      >
+        <h1 className="p-3 text-center text-4xl">Login</h1>
+        <form onSubmit={onLoginSubmit}>
+          <div className="mb-3">
+            <p className="mb-6 text-2xl">Your WIF</p>
+            <Controller
+              name="wif"
+              render={({ name, value, onChange }) => (
+                <input
+                  className="w-full bg-transparent p-5 border border-white rounded text-xl"
+                  name={name}
+                  value={value}
+                  onChange={onChange}
+                  type="password"
+                />
+              )}
+              control={loginControl}
+              rules={{
+                required: 'This field is required',
+                pattern: {
+                  value: /^[a-z0-9]{52}$/i,
+                  message: 'Invalid WIF'
+                }
+              }}
+            />
+          </div>
+          <div className="flex justify-center">
+            <button className="bg-red-600 px-4 py-3 text-2xl rounded" type="submit">Login</button>
+          </div>
+        </form>
+      </CustomModal>
+
       <header className="flex pl-10 pr-5">
         <div className="text-sm flex-1 mt-8">
-          <p><span className="text-orange-500">
-            Your</span> address: {data.address.split(':')[1].substr(0, 8)}…
-          </p>
-          <p>BCH Balance: {data.balance} <span className="text-orange-500">BCH</span></p>
-          <p>
-            <span className="text-blue-500">Token Balance</span>:{' '}
-            {data.tokens.length === 0
-              ? '-'
-              : data.tokens.map(({ balance, symbol }) => `${balance} ${symbol}`).join(', ')
-            }
-          </p>
-          <p>Current <span className="text-orange-500">peers</span>: {peersCount}</p>
+          {data ? (
+            <>
+              <p><span className="text-orange-500">
+                Your</span> address: {data.address.split(':')[1].substr(0, 8)}…
+              </p>
+              <p>BCH Balance: {data.balance} <span className="text-orange-500">BCH</span></p>
+              <p>
+                <span className="text-blue-500">Token Balance</span>:{' '}
+                {data.tokens.length === 0
+                  ? '-'
+                  : data.tokens.map(({ balance, symbol }) => `${balance} ${symbol}`).join(', ')
+                }
+              </p>
+              <p>Current <span className="text-orange-500">peers</span>: {peersCount}</p>
+            </>
+          ) : (
+            <button className="bg-red-600 px-4 py-3 text-2xl rounded" onClick={handleLoginClick}>Login</button>
+          )}
         </div>
         <div className="flex-none brand-name text-8xl mr-6 mt-10">
           <span className="text-blue-500">SLP.</span><span>Cocktail</span>
         </div>
         <img className="flex-none h-full" src="/logo.png" alt="Logo" />
       </header>
+      {error && <div className="text-red-600 text-center p-4">{error.message}</div>}
       <div className="mt-10 mb-16 flex justify-evenly">
         <div className="w-4/12">
-          <form onSubmit={handleSubmit(console.log)}>
-            <div className="mb-6">
-              <p className="mb-6 text-2xl">Token</p>
-              <Controller
-                defaultValue={tokens?.[0]?.symbol}
-                name="token"
-                render={({ name, value, onChange }) => (
-                  <CustomSelect id={name} options={tokensOptions} onChange={onChange} value={value} />
-                )}
-                control={control}
-                rules={{ required: 'This field is required' }}
-              />
-            </div>
-
-            <div className="mb-6">
-              <p className="mb-6 text-2xl">Amount</p>
-              <Controller
-                name="amount"
-                render={({ name, value, onChange }) => (
-                  <InlineRadioGroup id={name} options={[1, 5, 10, 50]} onChange={onChange} selectedValue={value} />
-                )}
-                control={control}
-              />
-            </div>
-
-            <div className="mb-5">
-              <p className="mb-6 text-2xl">Peers</p>
-              <Controller
-                name="peers"
-                render={({ name, value, onChange }) => (
-                  <InlineRadioGroup id={name} options={[5, 7, 10, 15]} onChange={onChange} selectedValue={value} />
-                )}
-                control={control}
-              />
-            </div>
-
-            <div className="mb-5">
-              <p className="mb-6 text-2xl">Recepient address</p>
-              <Controller
-                name="address"
-                render={({ name, value, onChange }) => (
-                  <input
-                    className="w-full bg-transparent p-5 border border-white rounded text-xl"
-                    name={name}
-                    value={value}
-                    onChange={onChange}
-                  />
-                )}
-                control={control}
-                rules={{
-                  required: 'This field is required',
-                  pattern: {
-                    value: /^((simpleledger:)?(q|p)[a-z0-9]{41})/,
-                    message: 'Invalid address'
-                  }
-                }}
-              />
-            </div>
-
-            <div className="mt-8 flex justify-center">
-              <button className="bg-red-600 px-4 py-3 text-2xl rounded" type="submit">Shake it!</button>
-            </div>
-          </form>
+          <ShakeForm tokensOptions={tokensOptions} onSubmit={handleShakeFormSubmit} />
         </div>
         <div className="w-4/12 pt-12">
           <h1 className="text-5xl mt-2 mb-16">How it works</h1>
