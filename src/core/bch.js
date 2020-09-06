@@ -5,8 +5,13 @@ import BigNumber from "bignumber.js";
 
 const NETWORK = "testnet";
 const TESTNET_API_FREE = "https://free-test.fullstack.cash/v3/";
+const API_TOKEN =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmNTU1OWExY2U1MjBmMDAxOTA3ZDcyMyIsImVtYWlsIjoiYml0b2Zmb2dAZ21haWwuY29tIiwiYXBpTGV2ZWwiOjAsInJhdGVMaW1pdCI6MywiaWF0IjoxNTk5NDI5MDQ5LCJleHAiOjE2MDIwMjEwNDl9.NekXZiTIaQOWdtdoJkDa_U8fcW2q4W3RRC_F618TND8";
 
-export const bchjs = new BchJS({ restURL: TESTNET_API_FREE });
+export const bchjs = new BchJS({
+  restURL: TESTNET_API_FREE,
+  apiToken: API_TOKEN,
+});
 
 export async function prepareTransaction(
   cashAddresses,
