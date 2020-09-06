@@ -76,7 +76,7 @@ export default function MainPage() {
               wif: data.wif,
               amount: formData.amount,
               peersSize: formData.peers,
-              recepient: formData.address,
+              recepient: formData.address.replace('bchtest:', ""),
               tokenId: formData.token,
             },
             (params) => {
@@ -252,16 +252,19 @@ export default function MainPage() {
         <div className="w-4/12 pt-12">
           <h1 className="mt-2 mb-16 text-5xl">How it works</h1>
           <p className="mb-4 text-lg">
-            1. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer
-            nec odio. Praesent libero. Sed cursus ante dapibus diam.
+            1. The user configures the amount of tokens, receiver and privacy level (peers count) and press “Shake it”.
           </p>
           <p className="mb-4 text-lg">
-            2. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris
-            massa. Vestibulum lacinia arcu eget nulla.
+            2. The peers are matched via webrtc based on user preferences.
+          </p>
+          <p className="mb-4 text-lg">
+            3. All matched peers form the transaction.
+          </p>
+          <p className="mb-4 text-lg">
+            4. Every user signs own inputs.
           </p>
           <p className="text-lg">
-            3. Curabitur sodales ligula in libero. Sed dignissim lacinia nunc.
-            Curabitur tortor!
+            5. Signed transaction is broadcasted to network.
           </p>
         </div>
       </div>

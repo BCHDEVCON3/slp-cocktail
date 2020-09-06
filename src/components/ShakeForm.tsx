@@ -114,7 +114,7 @@ export default function ShakeForm(props: ShakeFormProps) {
             rules={{
               required: "This field is required",
               pattern: {
-                value: /^((slptest:)?(q|p)[a-z0-9]{41})/,
+                value: /^((slptest:|bchtest:)?(q|p)[a-z0-9]{41})/,
                 message: "Invalid address",
               },
             }}
