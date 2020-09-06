@@ -1,4 +1,16 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project goal is to create the platform for the decentralized Coinjoins for SLP tokens.
+
+How it works:
+
+1. The user configures the amount of tokens, receiver and privacy level (peers count) and press “Shake it”.
+
+2. The peers are matched via webrtc based on user preferences.
+
+3. All matched peers form the transaction.
+
+4. Every user signs own inputs.
+
+5. Signed transaction is broadcasted to network.
 
 ## Available Scripts
 
