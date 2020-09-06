@@ -2,6 +2,8 @@ DEMO:
 
 [![SLP Demo](https://user-images.githubusercontent.com/11996139/92336326-0f4b8180-f0a8-11ea-99e3-b3e31fdcf997.png)](https://youtu.be/iw079Qw_I1w)
 
+Example of the valid transaction with SLPCocktail: https://explorer.bitcoin.com/tbch/tx/47a6c04f2eddf70475032ac13245fb44f3a950c44086d74d6771a8a616e41c01
+
 This project goal is to create the platform for the decentralized Coinjoins for SLP tokens.
 
 How it works:
@@ -15,6 +17,13 @@ How it works:
 4. Every user signs own inputs.
 
 5. Signed transaction is broadcasted to network.
+
+### Current Limitations:
+
+- This project uses a free plan of the https://fullstack.cash/. At this moment, if you are trying to create a transaction for many accounts or for accounts that have a lot of UTXO - you will get an rate-limit error.
+- Also, our project uses public webrtc signal servers. If you can't find peers for a long time, try pressing "Cancel" and "Shake it" again. This should help.
+
+If you try to build transaction for a large number of accounts or for accounts with verious amount of 
 
 ## Available Scripts
 
