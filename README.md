@@ -1,3 +1,7 @@
+DEMO:
+
+[![SLP Demo](https://user-images.githubusercontent.com/11996139/92336326-0f4b8180-f0a8-11ea-99e3-b3e31fdcf997.png)](https://youtu.be/iw079Qw_I1w)
+
 This project goal is to create the platform for the decentralized Coinjoins for SLP tokens.
 
 How it works:
