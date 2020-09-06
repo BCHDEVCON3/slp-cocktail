@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import BchJS from "@psf/bch-js";
 import BigNumber from "bignumber.js";
 
