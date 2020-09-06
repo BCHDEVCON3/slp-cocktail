@@ -47,7 +47,7 @@ window.second = {
 window.joincoin = async () => {
   try {
     let [transactionBuilder1, insInfo1] = await prepareTransaction(
-      [ACCOUNT_1.cashAddress, ACCOUNT_2.cashAddress],
+      [ACCOUNT_1.cashAddress],
       [ACCOUNT_3.cashAddress, ACCOUNT_4.cashAddress],
       TOKENQTY,
       TOKENID,

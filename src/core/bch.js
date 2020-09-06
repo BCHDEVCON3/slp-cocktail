@@ -4,7 +4,7 @@ import BigNumber from "bignumber.js";
 const NETWORK = "testnet";
 const TESTNET_API_FREE = "https://free-test.fullstack.cash/v3/";
 
-const bchjs = new BchJS({ restURL: TESTNET_API_FREE });
+export const bchjs = new BchJS({ restURL: TESTNET_API_FREE });
 
 export async function prepareTransaction(
   cashAddresses,
@@ -191,10 +191,31 @@ export async function getBCHBalance(cashAddress) {
   }
 }
 
-export async function getSLPBalance(slpAddress) {
+export async function getSLPBalance(cashAddress) {
   try {
-    const tokens = await bchjs.SLP.Utils.balancesForAddress(slpAddress);
-    return tokens;
+    // doest work:
+    // const tokens = await bchjs.SLP.Utils.balancesForAddress(slpAddress);
+
+    // try:
+    const data = await bchjs.Electrumx.utxo(cashAddress);
+    const utxos = data.utxos;
+
+    let allUtxos = await bchjs.SLP.Utils.tokenUtxoDetails(utxos);
+    let tokens = {};
+    allUtxos.forEach((utxo) => {
+      if (utxo && utxo.utxoType === "token") {
+        tokens[utxo.tokenId] = tokens[utxo.tokenId] || {
+          tokenId: utxo.tokenId,
+          balance: 0,
+          slpAddress: bchjs.SLP.Address.toSLPAddress(cashAddress),
+          decimalCount: utxo.decimals,
+          tokenTicker: utxo.tokenTicker,
+          tokenName: utxo.tokenName,
+        };
+        tokens[utxo.tokenId].balance += utxo.tokenQty;
+      }
+    });
+    return Object.values(tokens);
   } catch (err) {
     throw err;
   }

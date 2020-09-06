@@ -1,8 +1,8 @@
-import BchJS from "@psf/bch-js";
-import { uuidv4 } from "lib0/random";
 import * as Y from "yjs";
 import { WebrtcProvider } from "y-webrtc";
+import { uuidv4 } from "lib0/random";
 import {
+  bchjs,
   prepareTransaction,
   signTransaction,
   broadcastTransaction,
@@ -22,17 +22,13 @@ type DoneParams = {
   explorerUrl: string;
 };
 
-const TESTNET_API_FREE = "https://free-test.fullstack.cash/v3/";
-
-const bchjs = new BchJS({ restURL: TESTNET_API_FREE });
-
 interface PoolItem {
   id: string;
   from: string;
   to: string;
 }
 
-export function shakeIt(
+export async function shakeIt(
   { wif, tokenId, amount, recepient, peersSize }: SnakeItParams,
   done: (doneParams: DoneParams) => void,
   onError?: (err: Error) => void
@@ -45,6 +41,7 @@ export function shakeIt(
   const wrtcProvider = new WebrtcProvider(roomName, doc, {
     password: "slp_coctail_secret",
   } as any);
+  await new Promise((r) => setTimeout(r, 1_000));
 
   const me = getMe();
   const pool = doc.getArray<PoolItem>("pool");
