@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@msgpack/msgpack": "^2.0.0",
     "@psf/bch-js": "^3.5.5",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
@@ -17,6 +18,7 @@
     "bitcoincom-link": "^0.1.10-ping02",
     "clsx": "^1.1.1",
     "customize-cra": "^1.0.0",
+    "lib0": "^0.2.33",
     "react": "^16.13.1",
     "react-app-rewired": "^2.1.6",
     "react-dom": "^16.13.1",
@@ -27,7 +29,9 @@
     "tailwindcss": "^1.8.2",
     "typescript": "~3.7.2",
     "use-onclickoutside": "^0.3.1",
-    "woozie": "^1.0.0-beta.8"
+    "woozie": "^1.0.0-beta.8",
+    "y-webrtc": "^10.1.6",
+    "yjs": "^13.3.2"
   },
   "scripts": {
     "start": "react-app-rewired start",

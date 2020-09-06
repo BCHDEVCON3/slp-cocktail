@@ -5,8 +5,6 @@ import "./fonts.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 
-// import "./bch-playground";
-
 ReactDOM.render(
   <React.StrictMode>
     <App />
