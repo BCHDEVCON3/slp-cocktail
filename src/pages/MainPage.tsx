@@ -144,7 +144,7 @@ export default function MainPage() {
         <h1 className="p-3 text-4xl text-center">Success</h1>
         <p>
           See{" "}
-          <a href={transactionUrl} target="_blank" rel="noopener noreferrer">
+          <a href={transactionUrl} target="_blank" rel="noopener noreferrer" className="break-all">
             {transactionUrl}
           </a>{" "}
           for details
