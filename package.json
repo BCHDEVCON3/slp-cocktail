@@ -14,7 +14,7 @@
     "@types/react-dom": "^16.9.0",
     "@types/react-modal": "^3.10.6",
     "@types/react-radio-group": "^3.0.2",
-    "axios": "0.19.2",
+    "axios": "0.21.1",
     "bignumber.js": "^9.0.0",
     "bitcoincom-link": "^0.1.10-ping02",
     "clsx": "^1.1.1",
